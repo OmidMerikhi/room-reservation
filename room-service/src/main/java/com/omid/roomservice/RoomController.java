@@ -1,6 +1,8 @@
 package com.omid.roomservice;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -10,12 +12,15 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/rooms")
+
 public class RoomController {
     private final RoomService roomService;
     private final RoomMapping roomMapping;
+    private final Environment env;
 
     @GetMapping
     public List<Room> loadAll() {
+        System.out.println(env.getProperty("local.server.port"));
         return roomService.loadAll();
     }
 
