@@ -20,8 +20,8 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public RoomDto loadOne(@PathVariable("id") String id) {
-        return roomMapping.toViewModel(roomService.loadOne(id));
+    public Room loadOne(@PathVariable("id") String id) {
+        return roomService.loadOne(id);
     }
 
     @PostMapping

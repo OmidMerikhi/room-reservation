@@ -1,0 +1,13 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: reservation-service
+  data:
+    mongodb:
+      authentication-database: admin
+      database: room-reservation
+      host: localhost
+      port: 27017
+  config:
+    import: optional:configserver:http://localhost:8888

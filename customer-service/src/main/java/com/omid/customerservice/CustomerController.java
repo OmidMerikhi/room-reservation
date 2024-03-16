@@ -20,8 +20,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<CustomerDto> loadAll(){
-        return customerMapper.toViewModel(customerService.loadAll());
+    public List<Customer> loadAll(){
+        return customerService.loadAll();
     }
 
     @GetMapping("/search")
