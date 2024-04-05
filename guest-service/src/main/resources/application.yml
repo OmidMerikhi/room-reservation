@@ -1,0 +1,18 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: guest-service
+  config:
+    import: optional:configserver:http://localhost:8888
+#----------------------------------
+  data:
+    mongodb:
+      database: room-reservation
+      port: 27017
+      authentication-database: admin
+      host: localhost
+    redis:
+      database: 1
+      port: 6379
+
