@@ -11,6 +11,7 @@
         <module name="room-service" />
         <module name="guest-service" />
         <module name="eureka-server" />
+        <module name="reservation-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -19,6 +20,7 @@
       <module name="config-server" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="guest-service" options="-parameters" />
+      <module name="reservation-service" options="-parameters" />
       <module name="room-service" options="-parameters" />
     </option>
   </component>
