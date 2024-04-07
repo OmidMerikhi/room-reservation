@@ -1,0 +1,12 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: room-reservation-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+

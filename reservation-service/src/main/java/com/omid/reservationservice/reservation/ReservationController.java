@@ -2,6 +2,7 @@ package com.omid.reservationservice.reservation;
 
 import ir.huri.jcal.JalaliCalendar;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +14,10 @@ public class ReservationController {
     private final ReservationService reservationService;
 //    private final ReservationMapper reservationMapper;
 
+    private final Environment env;
     @GetMapping
     public List<ReservationDto> getAllReservations() {
+        System.out.println(env.getProperty("local.server.port"));
         return reservationService.loadAllReservations();
     }
 

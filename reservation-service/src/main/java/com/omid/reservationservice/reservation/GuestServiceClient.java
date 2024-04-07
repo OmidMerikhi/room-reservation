@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Service
-@FeignClient(name = "guest-service", path = "/api/guests")
+@FeignClient(name = "guest-service", path = "/api/guests", fallback = GuestServiceFallback.class)
 public interface GuestServiceClient {
     @GetMapping
     public List<Guest> loadAllGuest();

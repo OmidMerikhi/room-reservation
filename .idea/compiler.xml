@@ -8,19 +8,23 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
+        <module name="reservation-service" />
+        <module name="room-reservation-service" />
+        <module name="api-gateway" />
         <module name="room-service" />
         <module name="guest-service" />
         <module name="eureka-server" />
-        <module name="reservation-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
       <module name="config-server" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="guest-service" options="-parameters" />
       <module name="reservation-service" options="-parameters" />
+      <module name="room-reservation-service" options="-parameters" />
       <module name="room-service" options="-parameters" />
     </option>
   </component>
