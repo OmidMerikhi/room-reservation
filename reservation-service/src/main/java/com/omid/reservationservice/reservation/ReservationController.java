@@ -4,7 +4,6 @@ import ir.huri.jcal.JalaliCalendar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -12,23 +11,24 @@ import java.util.List;
 @RequestMapping("/api/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
+//    private final ReservationMapper reservationMapper;
 
     @GetMapping
-    public List<Reservation> getAllReservations() {
+    public List<ReservationDto> getAllReservations() {
         return reservationService.loadAllReservations();
     }
 
     @GetMapping("/search")
-    public List<Reservation> search(@RequestParam("from") JalaliCalendar from,
-                                    @RequestParam("to") JalaliCalendar to) {
+    public List<ReservationDto> search(@RequestParam("from") Long from,
+                                       @RequestParam("to") Long to) {
         return reservationService.searchReservation(from,to);
     }
 
     @PostMapping
-    public Reservation createReservation(@RequestParam("guest-id") String guestId,
+    public ReservationDto createReservation(@RequestParam("guest-id") String guestId,
                                          @RequestParam("room-id") String roomId,
-                                         @RequestParam("from") String from,
-                                         @RequestParam("to") String to) {
+                                         @RequestParam("from") Long from,
+                                         @RequestParam("to") Long to) {
         return reservationService.createReservation(guestId, roomId, from, to);
     }
 }

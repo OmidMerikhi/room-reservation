@@ -14,8 +14,8 @@ public class Reservation {
     private Guest guest;
     private Room room;
     private Double price=400000d;
-    private JalaliCalendar from;
-    private JalaliCalendar to;
+    private LocalDate from;
+    private LocalDate to;
     private Double totalPrice;
 
     public Reservation() {

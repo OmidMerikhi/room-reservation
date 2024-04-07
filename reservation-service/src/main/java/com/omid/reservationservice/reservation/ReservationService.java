@@ -7,10 +7,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Queue;
 
 @Service
 @RequiredArgsConstructor
@@ -18,47 +20,68 @@ public class ReservationService {
     private final MongoTemplate mongoTemplate;
     private final GuestServiceClient guestServiceClient;
     private final RoomServiceClient roomServiceClient;
+    private static final ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    private final ReservationRepository reservationRepository;
 
-    public Reservation createReservation(String questId,
-                                         String roomId,
-                                         String from,
-                                         String to) {
-        Reservation reservation=new Reservation();
+    public ReservationDto createReservation(String questId, String roomId, Long from, Long to) {
 
-        JalaliCalendar f=new JalaliCalendar();
-        f.set(Integer.parseInt(from.substring(0,4)),
-                Integer.parseInt(from.substring(5,6)),
-                Integer.parseInt(from.substring(7,9)));
+        Reservation reservation = new Reservation();
 
-        JalaliCalendar t=new JalaliCalendar();
-        t.set(Integer.parseInt(to.substring(0,4)),
-                Integer.parseInt(to.substring(5,6)),
-                Integer.parseInt(to.substring(7,9)));
+        JalaliCalendar f = new JalaliCalendar(Instant.ofEpochMilli(from).atZone(zoneId).toLocalDate());
+        JalaliCalendar t = new JalaliCalendar(Instant.ofEpochMilli(to).atZone(zoneId).toLocalDate());
+        reservation.setFrom(Instant.ofEpochMilli(from).atZone(zoneId).toLocalDate());
+        reservation.setTo(Instant.ofEpochMilli(to).atZone(zoneId).toLocalDate());
 
-        Guest guest=guestServiceClient.loadGuestById(questId);
-        Room room=roomServiceClient.getRoomById(roomId);
+        Guest guest = guestServiceClient.loadGuestById(questId);
+        Room room = roomServiceClient.getRoomById(roomId);
         reservation.setGuest(guest);
         reservation.setRoom(room);
-        reservation.setFrom(f);
-        reservation.setTo(t);
 
-        int days=reservation.getTo().getDay()-reservation.getFrom().getDay();
-        reservation.setTotalPrice(days*reservation.getPrice());
 
-        return mongoTemplate.insert(reservation);
+        int days = t.getDay() - f.getDay();
+        reservation.setTotalPrice(days * reservation.getPrice());
+
+        ReservationDto reservationDto = new ReservationDto(reservation);
+        reservationDto.setFrom(f.toString());
+        reservationDto.setTo(t.toString());
+
+        mongoTemplate.insert(reservation);
+
+        return reservationDto;
     }
 
-    public List<Reservation> loadAllReservations() {
-        return mongoTemplate.findAll(Reservation.class);
+    public List<ReservationDto> loadAllReservations() {
+        List<Reservation> reservations = mongoTemplate.findAll(Reservation.class);
+        List<ReservationDto> reservationDtoList = new ArrayList<>();
+        for (Reservation r : reservations) {
+            ReservationDto reservationDto = new ReservationDto(r);
+            JalaliCalendar f = new JalaliCalendar(r.getFrom());
+            JalaliCalendar t = new JalaliCalendar(r.getTo());
+            reservationDto.setFrom(f.toString());
+            reservationDto.setTo(t.toString());
+            reservationDtoList.add(reservationDto);
+        }
+        return reservationDtoList;
     }
 
-    public List<Reservation> searchReservation(JalaliCalendar from, JalaliCalendar to){
-        Query q=new Query();
-        q.addCriteria(Criteria.where("").andOperator(
-                Criteria.where("from").is(from),
-                Criteria.where("from").is(to)
-        ));
-        return mongoTemplate.find(q, Reservation.class);
+    public List<ReservationDto> searchReservation(Long from, Long to) {
+        LocalDate f=Instant.ofEpochMilli(from).atZone(zoneId).toLocalDate();
+        LocalDate t=Instant.ofEpochMilli(to).atZone(zoneId).toLocalDate();
+
+        Query q = new Query();
+        q.addCriteria(Criteria.where("").orOperator(
+                Criteria.where("from").gte(from),
+                Criteria.where("from").lt(to)
+                ));
+        List<ReservationDto> reservationDtoList = new ArrayList<>();
+//        List<Reservation> reservations=mongoTemplate.find(q, Reservation.class);
+        List<Reservation> reservations=reservationRepository.findByFromBetween(f,t);
+        for(Reservation r:reservations) {
+            ReservationDto reservationDto = new ReservationDto(r);
+            reservationDtoList.add(reservationDto);
+        }
+
+        return reservationDtoList;
 
     }
 
